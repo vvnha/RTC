@@ -46,7 +46,7 @@ navigator.mediaDevices.getUserMedia({
     })
 
     document.getElementById('shut').onclick = function() {
-        vidTrack.forEach(track => track.enabled = false);
+        vidTrack.forEach(track => track.enabled = !track.enabled);
     }
 
 })
