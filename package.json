@@ -11,7 +11,7 @@
     "nodemon": "^2.0.12"
   },
   "scripts": {
-    "start": "node sv.js"
+    "start": "nodemon sv.js"
   },
   "name": "zoom-clone",
   "version": "1.0.0",

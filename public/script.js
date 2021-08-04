@@ -101,9 +101,9 @@ function addVideoStream(video, stream, userId) {
 document.getElementById('screen').onclick = function() {
     navigator.mediaDevices.getDisplayMedia({
         video : true
-    }).then(stream =>{
+    }).then(screenStream =>{
         const video = document.createElement('video')
-        addVideoStream(video, stream, 'share screen')
+        addVideoStream(video, screenStream, 'share screen')
 
         const myPeer = new Peer();
         myPeer.on('open', id => {
@@ -112,7 +112,7 @@ document.getElementById('screen').onclick = function() {
     
         // listen others' call
         myPeer.on('call', call=>{
-            call.answer(stream)
+            call.answer(screenStream)
             // const video = document.createElement('video')
             // call.on('stream', userVideoStream=>{
             //     addVideoStream(video, userVideoStream, call.peer)
@@ -120,7 +120,7 @@ document.getElementById('screen').onclick = function() {
         })
     
         socket.on('user-connected', userId=> {
-            connectToNewUser(userId, stream)
+            connectToNewUser(userId, screenStream)
         })
     
         socket.on('user-disconnected', userId =>{
@@ -133,10 +133,5 @@ document.getElementById('screen').onclick = function() {
                 console.log(list);
             })
         })
-    
-        document.getElementById('shut').onclick = function() {
-            vidTrack.forEach(track => track.enabled = false);
-        }
-    
     })
 }
