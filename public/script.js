@@ -18,11 +18,8 @@ navigator.mediaDevices.getUserMedia({
 }).then(stream =>{
     
     addVideoStream(myVideo, stream, 'YOU')
-    var vidTrack = stream.getVideoTracks();
-    vidTrack.forEach(track => track.enabled = false);
-
-    setTimeout(() => {  vidTrack.forEach(track => track.enabled = true); }, 10000);
-
+    var vidTrack = stream.getTracks();
+    vidTrack.forEach(track => track.enabled = true);
 
     // listen others' call
     myPeer.on('call', call=>{
@@ -47,6 +44,11 @@ navigator.mediaDevices.getUserMedia({
             console.log(list);
         })
     })
+
+    document.getElementById('shut').onclick = function() {
+        vidTrack.forEach(track => track.enabled = false);
+    }
+
 })
 
 const myPeer = new Peer();
@@ -70,34 +72,18 @@ function connectToNewUser(userId, stream){
 
 function addVideoStream(video, stream, userId) {
     const newDiv = document.createElement('div');
-    // socket.emit('list-users');
-    // socket.on('user-list', list => {
-    //     console.log(list[0]);
-    // })
-    // if(tam<2){
-
-    //     tam++;
-
-        //if(tam!=1){
-
-            // original
-            video.srcObject = stream
-            video.addEventListener('loadedmetadata', () => {
-                video.play()
-        
-                newDiv.setAttribute("id", "Div1");
-                newDiv.append(video)
-        
-                var p = document.createElement("p");
-                p.innerHTML = userId
-                newDiv.append(p);
-                
-            })
-            videoGrid.append(newDiv)
-
-
-        //}
-    // }
+        video.srcObject = stream
+        video.addEventListener('loadedmetadata', () => {
+            video.play()
+    
+            newDiv.setAttribute("id", "Div1");
+            newDiv.append(video)
+    
+            var p = document.createElement("p");
+            p.innerHTML = userId
+            newDiv.append(p);
+        })
+    videoGrid.append(newDiv)
 }
 
  addName = ()=>{
@@ -111,7 +97,46 @@ function addVideoStream(video, stream, userId) {
     return kq;
 }
 
-window.onload = (event) => {
-    //alert('ok');
-    document.getElementById('shut').onclick = function() {alert('OK')}
-};  
+
+document.getElementById('screen').onclick = function() {
+    navigator.mediaDevices.getDisplayMedia({
+        video : true
+    }).then(stream =>{
+        const video = document.createElement('video')
+        addVideoStream(video, stream, 'share screen')
+
+        const myPeer = new Peer();
+        myPeer.on('open', id => {
+            socket.emit('join-room', ROOM_ID, id)
+        })
+    
+        // listen others' call
+        myPeer.on('call', call=>{
+            call.answer(stream)
+            // const video = document.createElement('video')
+            // call.on('stream', userVideoStream=>{
+            //     addVideoStream(video, userVideoStream, call.peer)
+            // })
+        })
+    
+        socket.on('user-connected', userId=> {
+            connectToNewUser(userId, stream)
+        })
+    
+        socket.on('user-disconnected', userId =>{
+            if(peers[userId]) peers[userId].close();
+    
+            // optional
+            socket.emit('list-users');
+            socket.on('user-list', list => {
+                users = list;
+                console.log(list);
+            })
+        })
+    
+        document.getElementById('shut').onclick = function() {
+            vidTrack.forEach(track => track.enabled = false);
+        }
+    
+    })
+}
