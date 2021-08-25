@@ -19,20 +19,20 @@ var users = {}
 const socketToRoom = {};
 
 io.on('connection',socket =>{
-    socket.on('join-room', (roomId, userId) =>{
+    socket.on('join-room', (roomId, userId, userName) =>{
 
          //optional
         if (users[roomId]) {
-            users[roomId].push(userId);
+            users[roomId].push({userId, userName});
         } else {
-            users[roomId] = [userId];
+            users[roomId] = [{userId, userName}];
         }
         socketToRoom[socket.id] = roomId;
         console.log(users[roomId]);
         //__________
 
         socket.join(roomId)
-        socket.broadcast.to(roomId).emit('user-connected', userId)
+        socket.broadcast.to(roomId).emit('user-connected', {userId, userName})
         socket.on('disconnect', ()=>{
 
             //optional
