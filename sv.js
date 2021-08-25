@@ -49,6 +49,10 @@ io.on('connection',socket =>{
             
         })
 
+        socket.on('message', (userName, message) =>{
+            socket.in(roomId).emit('message-list', userName +': '+ message)
+        })
+
         socket.on('list-users', ()=>{
             socket.broadcast.to(roomId).emit('user-list', users[roomId])
         })

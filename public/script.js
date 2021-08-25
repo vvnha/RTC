@@ -1,6 +1,7 @@
 const socket = io('/');
 const videoGrid = document.getElementById('video-grid')
 const myVideo = document.createElement('video')
+
 const type = 3;
 
 myVideo.muted = true
@@ -86,7 +87,13 @@ navigator.mediaDevices.getUserMedia({
         })
     })
 
-
+    // message
+    socket.on('message-list', rs => {
+        var node = document.createElement("LI");
+        var textnode = document.createTextNode(rs); 
+        node.appendChild(textnode);
+        document.getElementById("listMess").appendChild(node);
+    })
 
     document.getElementById('shut').onclick = function() {
         vidTrack.forEach(track => track.enabled = !track.enabled);
@@ -211,3 +218,12 @@ document.getElementById('screen').onclick = function() {
         })
     })
 }
+
+document.getElementById('sendMess').onclick = () => {
+    const mess = document.getElementById('mess').value;
+    var node = document.createElement("LI");                 // Create a <li> node
+    var textnode = document.createTextNode(randomName+": "+mess); 
+    node.appendChild(textnode);
+    document.getElementById("listMess").appendChild(node);
+    socket.emit('message', randomName, mess);
+};
