@@ -19,32 +19,32 @@ var users = {}
 const socketToRoom = {};
 
 io.on('connection',socket =>{
-    socket.on('join-room', (roomId, userId, userName) =>{
+    socket.on('join-room', (roomId, peerId, userName) =>{
 
          //optional
         if (users[roomId]) {
-            users[roomId].push({userId, userName});
+            users[roomId].push({peerId, userName});
         } else {
-            users[roomId] = [{userId, userName}];
+            users[roomId] = [{peerId, userName}];
         }
         socketToRoom[socket.id] = roomId;
         console.log(users[roomId]);
         //__________
 
         socket.join(roomId)
-        socket.broadcast.to(roomId).emit('user-connected', {userId, userName})
+        socket.broadcast.to(roomId).emit('user-connected', {peerId, userName})
         socket.on('disconnect', ()=>{
 
             //optional
             let room = users[roomId];
             if (room) {
-                room = room.filter(id => id !== userId);
+                room = room.filter(id => id !== peerId);
                 users[roomId] = room;
             }
             console.log(users[roomId]);
             //_____
 
-            socket.broadcast.to(roomId).emit('user-disconnected', userId)
+            socket.broadcast.to(roomId).emit('user-disconnected', peerId)
             
             
         })

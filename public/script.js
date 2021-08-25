@@ -75,8 +75,8 @@ navigator.mediaDevices.getUserMedia({
         connectToNewUser(user, stream)
     })
 
-    socket.on('user-disconnected', userId =>{
-        if(peers[userId]) peers[userId].close();
+    socket.on('user-disconnected', peerId =>{
+        if(peers[peerId]) peers[peerId].close();
 
         // optional
         socket.emit('list-users');
@@ -95,7 +95,7 @@ navigator.mediaDevices.getUserMedia({
 })
 
 function connectToNewUser(user, stream){
-    const call = myPeer.call(user.userId, stream)
+    const call = myPeer.call(user.peerId, stream)
     socket.emit('list-users');
     var conn = myPeer.connect(call.peer);
         conn.on('open', function(){
@@ -109,15 +109,15 @@ function connectToNewUser(user, stream){
     call.on('close', ()=>{
         video.remove();
     })
-    peers[user.userId] = call
+    peers[user.peerId] = call
 }
 
 
 
-const addVideoStream = async (video, stream, userId) => {
+const addVideoStream = async (video, stream, peerId) => {
     // var name = "YOU";
-    // if ( userId !== null) name = await getNameUser(userId);
-    const name = userId;
+    // if ( peerId !== null) name = await getNameUser(peerId);
+    const name = peerId;
     const newDiv = document.createElement('div');
         video.srcObject = stream
         video.addEventListener('loadedmetadata', () => {
@@ -138,14 +138,14 @@ const addVideoStream = async (video, stream, userId) => {
 //     // await socket.emit('list-users');
     
 //     // await socket.on('user-list', async list => {
-//     //     const userInfo = await list.filter(peer => peer.userId === peerId);
+//     //     const userInfo = await list.filter(peer => peer.peerId === peerId);
 //     //     console.log(userInfo);
 //     //     return userInfo[0];
 //     // })
 
 //     const result = "UNKNOWN";
 //     if (list.length > 0){
-//         const userInfo = list.filter(peer => peer.userId === peerId)[0];
+//         const userInfo = list.filter(peer => peer.peerId === peerId)[0];
 //         if (typeof userInfo !== 'undefined'){
 //             kq = userInfo.userName;
 //             return kq;
@@ -161,7 +161,7 @@ const addVideoStream = async (video, stream, userId) => {
 //         socket.on('user-list', async list => {
 //             console.log(list);
 //             if (list.length > 0){
-//                 const userInfo = list.filter(peer => peer.userId === peerId)[0];
+//                 const userInfo = list.filter(peer => peer.peerId === peerId)[0];
 //                 if (typeof userInfo !== 'undefined'){
 //                     kq = userInfo.userName;
 //                     console.log(kq);
@@ -199,8 +199,8 @@ document.getElementById('screen').onclick = function() {
             connectToNewUser(user, screenStream)
         })
     
-        socket.on('user-disconnected', userId =>{
-            if(peers[userId]) peers[userId].close();
+        socket.on('user-disconnected', peerId =>{
+            if(peers[peerId]) peers[peerId].close();
     
             // optional
             socket.emit('list-users');
