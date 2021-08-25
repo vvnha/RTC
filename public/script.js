@@ -87,18 +87,18 @@ navigator.mediaDevices.getUserMedia({
         })
     })
 
-    // message
-    socket.on('message-list', rs => {
-        var node = document.createElement("LI");
-        var textnode = document.createTextNode(rs); 
-        node.appendChild(textnode);
-        document.getElementById("listMess").appendChild(node);
-    })
-
     document.getElementById('shut').onclick = function() {
         vidTrack.forEach(track => track.enabled = !track.enabled);
     }
 
+})
+
+// message
+socket.on('message-list', rs => {
+    var node = document.createElement("LI");
+    var textnode = document.createTextNode(rs); 
+    node.appendChild(textnode);
+    document.getElementById("listMess").appendChild(node);
 })
 
 function connectToNewUser(user, stream){
