@@ -59,17 +59,14 @@ navigator.mediaDevices.getUserMedia({
         call.answer(stream);
         const name = new Promise( resolve => myPeer.on('connection', function(conn) {
             conn.on('data', function(data){
-                console.log(data);
                 resolve(data);
             });
         }));
         const video = document.createElement('video')
         const userVideoStream =  new Promise( resolve => call.on('stream', (userVideoStream) =>{
-            // addVideoStream(video, userVideoStream,name)
             resolve(userVideoStream)
         }));
         Promise.all([name,userVideoStream]).then((rs) =>{
-            console.log(rs);
             addVideoStream(video, rs[1],rs[0])
         })
     })
@@ -87,9 +84,6 @@ navigator.mediaDevices.getUserMedia({
             users = list;
             console.log(list);
         })
-    })
-    socket.on('user-list', async list => {
-
     })
 
 
@@ -139,81 +133,81 @@ const addVideoStream = async (video, stream, userId) => {
     videoGrid.append(newDiv)
 }
 
- const getName = (peerId, list)=>{
+//  const getName = (peerId, list)=>{
 
-    // await socket.emit('list-users');
+//     // await socket.emit('list-users');
     
-    // await socket.on('user-list', async list => {
-    //     const userInfo = await list.filter(peer => peer.userId === peerId);
-    //     console.log(userInfo);
-    //     return userInfo[0];
-    // })
+//     // await socket.on('user-list', async list => {
+//     //     const userInfo = await list.filter(peer => peer.userId === peerId);
+//     //     console.log(userInfo);
+//     //     return userInfo[0];
+//     // })
 
-    const result = "UNKNOWN";
-    if (list.length > 0){
-        const userInfo = list.filter(peer => peer.userId === peerId)[0];
-        if (typeof userInfo !== 'undefined'){
-            kq = userInfo.userName;
-            return kq;
-        }
-    }
-    return result;
-}
-
-const getNameUser = (peerId) => {
-    return new Promise(resolve => {
-        console.log('OK');
-        socket.emit('list-users');
-        socket.on('user-list', async list => {
-            console.log(list);
-            if (list.length > 0){
-                const userInfo = list.filter(peer => peer.userId === peerId)[0];
-                if (typeof userInfo !== 'undefined'){
-                    kq = userInfo.userName;
-                    console.log(kq);
-                    resolve(kq);
-                }
-            }
-            resolve('UNKNOWN');
-      });      
-    });
-  }
-
-
-// document.getElementById('screen').onclick = function() {
-//     navigator.mediaDevices.getDisplayMedia({
-//         video : true
-//     }).then(screenStream =>{
-//         const video = document.createElement('video')
-//         addVideoStream(video, screenStream, 'share screen')
-
-//         const myPeer = new Peer();
-//         myPeer.on('open', id => {
-//             socket.emit('join-room', ROOM_ID, id)
-//         })
-    
-//         // listen others' call
-//         myPeer.on('call', call=>{
-//             call.answer(screenStream)
-//             // const video = document.createElement('video')
-//             // call.on('stream', userVideoStream=>{
-//             //     addVideoStream(video, userVideoStream, call.peer)
-//             // })
-//         })
-    
-//         socket.on('user-connected', (user)=> {
-//             connectToNewUser(user.userId, screenStream)
-//         })
-    
-//         socket.on('user-disconnected', userId =>{
-//             if(peers[userId]) peers[userId].close();
-    
-//             // optional
-//             socket.emit('list-users');
-//             socket.on('user-list', list => {
-//                 users = list;
-//                 console.log(list);
-//             })
-//         })
-//     })
+//     const result = "UNKNOWN";
+//     if (list.length > 0){
+//         const userInfo = list.filter(peer => peer.userId === peerId)[0];
+//         if (typeof userInfo !== 'undefined'){
+//             kq = userInfo.userName;
+//             return kq;
+//         }
+//     }
+//     return result;
 // }
+
+// const getNameUser = (peerId) => {
+//     return new Promise(resolve => {
+//         console.log('OK');
+//         socket.emit('list-users');
+//         socket.on('user-list', async list => {
+//             console.log(list);
+//             if (list.length > 0){
+//                 const userInfo = list.filter(peer => peer.userId === peerId)[0];
+//                 if (typeof userInfo !== 'undefined'){
+//                     kq = userInfo.userName;
+//                     console.log(kq);
+//                     resolve(kq);
+//                 }
+//             }
+//             resolve('UNKNOWN');
+//       });      
+//     });
+//   }
+
+
+document.getElementById('screen').onclick = function() {
+    navigator.mediaDevices.getDisplayMedia({
+        video : true
+    }).then(screenStream =>{
+        const video = document.createElement('video')
+        addVideoStream(video, screenStream, 'share screen')
+
+        const myPeer = new Peer();
+        myPeer.on('open', id => {
+            socket.emit('join-room', ROOM_ID, id, 'share screen')
+        })
+    
+        // listen others' call
+        myPeer.on('call', call=>{
+            call.answer(screenStream)
+            // const video = document.createElement('video')
+            // call.on('stream', userVideoStream=>{
+            //     addVideoStream(video, userVideoStream, call.peer)
+            // })
+        })
+    
+        socket.on('user-connected', (user)=> {
+            connectToNewUser(user, screenStream)
+        })
+    
+        socket.on('user-disconnected', userId =>{
+            if(peers[userId]) peers[userId].close();
+    
+            // optional
+            socket.emit('list-users');
+            socket.on('user-list', list => {
+                users = list;
+                console.log(list);
+            })
+        })
+    })
+}
