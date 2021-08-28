@@ -81,6 +81,9 @@ io.on('connection', socket => {
             socket.broadcast.to(roomId).emit('user-list', users[roomId])
         })
     })
+    socket.on('message', (userName, message, roomId) => {
+        socket.in(roomId).emit('message-list', userName + ': ' + message)
+    })
 })
 
 server.listen(process.env.PORT || 5000, () => console.log(`server is running on port 5000 or ${process.env.PORT}`));
