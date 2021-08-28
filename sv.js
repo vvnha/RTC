@@ -56,6 +56,23 @@ io.on('connection', socket => {
 
         })
 
+        socket.on('user-disconnect', (peerId) => {
+
+            //optional
+            let room = users[roomId];
+            if (room) {
+                room = room.filter(item => item.peerId !== peerId);
+                users[roomId] = room;
+            }
+            console.log(users[roomId]);
+            //_____
+
+            socket.broadcast.to(roomId).emit('user-disconnected', peerId)
+
+
+        })
+
+
         socket.on('message', (userName, message) => {
             socket.in(roomId).emit('message-list', userName + ': ' + message)
         })
